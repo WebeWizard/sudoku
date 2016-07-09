@@ -1,0 +1,8 @@
+[package]
+name = "rsudoku"
+version = "0.1.0"
+authors = ["Justin Leis <webewizard@gmail.com>"]
+
+[dependencies]
+text_io = "*"
+time = "*"
