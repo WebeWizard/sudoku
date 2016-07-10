@@ -2,6 +2,7 @@ use std::fmt;
 
 // Game represents the entire state of the Game
 // where 'board' is the current state of the grid
+#[derive(Debug, Clone)]
 pub struct Game {
     pub n: usize,
     pub size: usize,
@@ -102,11 +103,25 @@ impl Game {
                 if ( self.board[start_col+x][start_row+y].val_poss_set[val-1] != 0 ) {
                     non_zero_pos.push((start_col+x,start_row+y));
                 }
-                if ( non_zero_pos.len() > 1 ) { return (self.size,self.size); }
             }
         }
         if ( non_zero_pos.len() == 1 ) { return non_zero_pos[0]; }
-        else { return (self.size,self.size); }
+        else {
+            if ( non_zero_pos.len() > 1 ) {
+                for i in 0..non_zero_pos.len() {
+                    let mut count = 0;
+                    for v in 0..self.size {
+                        if ( self.board[non_zero_pos[i].0][non_zero_pos[i].1].val_poss_set[v] == 1 ) {
+                            count += 1;
+                        }
+                    }
+                    if ( count == 1 ) {
+                        return non_zero_pos[i];
+                    }
+                }
+            }
+            return (self.size,self.size);
+        }
     }
 
 }

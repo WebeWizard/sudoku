@@ -13,6 +13,8 @@ use time::precise_time_ns;
 mod sudoku;
 use sudoku::{Game, new_game};
 
+// TODO: Need to check for hidden singletons, triples, quads, omfg this his harder than I thought
+
 fn main() {
     let n: usize = 3;
     let size: usize = n.pow(2);
@@ -36,10 +38,9 @@ fn main() {
         boards.push(board);
     }
 
-    println!("{:?}",boards[2]);
-
     // attempt to solve each board
-    for g in 0..boards.len() {
+    for g in 2..3 {
+    //for g in 0..boards.len() {
         // parse each board into a Game
         let mut state: Game = new_game( n );
         let mut total_found: usize = 0;
