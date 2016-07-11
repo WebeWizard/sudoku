@@ -13,7 +13,11 @@ use time::precise_time_ns;
 mod sudoku;
 use sudoku::{Game, new_game};
 
+// TODO: Re-organize project to better maintain multiple techniques
 // TODO: Need to check for hidden singletons, triples, quads, omfg this his harder than I thought
+// TODO: Maybe we should have generic technique functions that take a slice, instead of having
+//           one function for subgrid and one for row and one for column
+// DONE?: check for naked pairs, triples
 
 fn main() {
     let n: usize = 3;
@@ -39,8 +43,8 @@ fn main() {
     }
 
     // attempt to solve each board
-    for g in 2..3 {
-    //for g in 0..boards.len() {
+    //for g in 2..3 {
+    for g in 0..boards.len() {
         // parse each board into a Game
         let mut state: Game = new_game( n );
         let mut total_found: usize = 0;
@@ -64,6 +68,10 @@ fn main() {
             for i in 0..round_results.len() {
                 total_found += 1;
                 state.set_value( round_results[i].0, round_results[i].1, round_results[i].2 );
+            }
+            println!("{}",state);
+            if (round_results.len() == 0) {
+                state.check_naked_subsets();
             }
         }
 

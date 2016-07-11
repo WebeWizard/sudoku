@@ -1,0 +1,31 @@
+~~~~~~ Rules ~~~~~~
+each row contains the exact set (1..n^2) in any order
+each column contains the exact set (1..n^2) in any order
+each subgrid contains the exact (1..n^2) in any order
+
+~~~~~~ Facts ~~~~~~
+n^2 x n^2 grid.
+grid is divided into n x n subgrids
+the sum of numbers in each row,column, or subgrid is the sum of the set: Sum = (n^2)(1+(n^2))/2
+the minimum sum of each subgrid row or subgrid column is: MinSubgridSum = n(1+n)/2
+the maximum sum of each subgrid row or subgrid column is: MaxSubgridSum = n((n^2-n+1)+n^2)/2
+each position has a base probability of 1/n
+
+~~~~~~ Facts about Guessing ~~~~~~  (A guess is an attempt to place a number in any position of the grid)
+A guess reduces the amount of remaining guesses in the row by 1
+A guess reduces the amount of remaining guesses in the column by 1
+A guess reduces the amount of remaining guesses in the subgrid by 1
+No other position in the row may use the same number as the guess
+No other position in the column may use the same number as the guess
+No other position in the subgrid may use the same number as the guess
+A guess increases the probability of row, subgrid, and column "partner" positions by:
+    (1/(n^2-x))-(1/((n^2-x)-1)) where x = the number of known positions in the row,
+    where x is the number of known positions in the row, subgrid, and column
+
+~~~~~~ Techniques ~~~~~~
+A "house" is a subgrid, column, or row
+
+Hidden Subsets
+ - When two (or more) cells share a subset of candidates that no other cell in the "house" has
+ - - Then we know the values must go in those cells, and we can remove the possibility of that value
+      going into any other cell in the "house"
