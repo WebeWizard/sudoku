@@ -1,4 +1,5 @@
 use std::fmt;
+use std::process;
 
 // Game represents the entire state of the Game
 // where 'board' is the current state of the grid
@@ -66,7 +67,7 @@ impl Game {
 
     }
 
-    pub fn check_naked_subsets( &self ) {
+    pub fn check_naked_subsets( &mut self ) {
         // check subgrids
         for x in 0..self.n {
             for y in 0..self.n {
@@ -81,7 +82,13 @@ impl Game {
     // fml this all wrong.  so so wrong.
     // well not completely wrong... it will work for naked pairs, but not all subsets
     // NOTE:  if we don't detect a subset "A,B,C" for A, then maybe we'll detect it when testing B?
-    fn check_subgrid_naked_subsets( &self, x: usize, y: usize ) {
+    fn check_subgrid_naked_subsets( &mut self, x: usize, y: usize ) {
+        println!("meow");
+        println!("{:?}",self.board[6][5].val_poss_set);
+        println!("{:?}",self.board[6][3].val_poss_set);
+        println!("{:?}",self.board[8][4].val_poss_set);
+        //println!("{:?}",self.board[0][0].val_poss_set);
+        //println!("{:?}",self.board[1][0].val_poss_set);
         // repeat for each cell in the subgrid
         for col in x*self.n..x*self.n+self.n {
             for row in y*self.n..y*self.n+self.n {
@@ -100,6 +107,7 @@ impl Game {
                 for new_col in x*self.n..x*self.n+self.n {
                     for new_row in y*self.n..y*self.n+self.n {
                         // don't compare a cell with itself
+                        if ( self.board[new_col][new_row].value != 0 ) { continue; }
                         if (new_col == col && new_row == row) { continue; }
                         // don't exact match the val_poss_set, instead...
                         // check if number in the test set is <= number in the sample set
@@ -129,8 +137,6 @@ impl Game {
                 // it's a naked subset if the number of possible values is the same as the number of matching cells
                 // count the number of possible values
                 if ( sample_count == matching_cells.len() ) {
-                    // now that we have a naked subset, wtf do we do with it?
-                    println!("We found a naked subset!");// remove the val_poss from all other subgrid cells
                     for nonss_col in x*self.n..x*self.n+self.n {
                         for nonss_row in y*self.n..y*self.n+self.n {
                             // skip if current cell is in the matching_cells
@@ -146,12 +152,21 @@ impl Game {
                     }
                     // detect if it's a locked subet?
                     // are they all in the same column?
+                    //println!("{:?}",self.board[col][row].val_poss_set);
                     let mut locked = true;
                     for i in 1..matching_cells.len() {
                         if ( matching_cells[i].0 != col ) { locked = false; }
                     }
                     if (locked == true) {
-                        println!("We found a locked subset in a column!");
+                        for i in 0..self.size {
+                            if ( in_subset( &matching_cells, (col, i) ) ) {continue;}
+                            for v in 0..self.size {
+                                if ( self.board[col][row].val_poss_set[v] == true ) {
+                                    self.board[col][i].val_poss_set[v] = false;
+                                }
+                            }
+                        //process::exit(1);
+                        }
                     }
                     // are they all in the same row?
                     locked = true;
@@ -159,10 +174,17 @@ impl Game {
                         if ( matching_cells[i].1 != row ) { locked = false; }
                     }
                     if (locked == true) {
-                        println!("We found a locked subset in a row!");
+                        for i in 0..self.size {
+                            if ( in_subset( &matching_cells, (i, row) ) ) {continue;}
+                            for v in 0..self.size {
+                                if ( self.board[col][row].val_poss_set[v] == true ) {
+                                    self.board[i][row].val_poss_set[v] = false;
+                                }
+                            }
+                        }
+                        //process::exit(1);
                     }
                 }
-                //println!("{:?}",matching_cells);
             }
         }
     }

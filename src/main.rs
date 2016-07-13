@@ -13,11 +13,13 @@ use time::precise_time_ns;
 mod sudoku;
 use sudoku::{Game, new_game};
 
-// TODO: Re-organize project to better maintain multiple techniques
+// TODO: CHECK ROWS AND COLUMNS FOR NAKED AND HIDDEN SINGLES
+// DONE?: Finish removing val_poss if Naked Locked subset
 // TODO: Need to check for hidden singletons, triples, quads, omfg this his harder than I thought
 // TODO: Maybe we should have generic technique functions that take a slice, instead of having
 //           one function for subgrid and one for row and one for column
 // DONE?: check for naked pairs, triples
+// TODO: Re-organize project to better maintain multiple techniques
 
 fn main() {
     let n: usize = 3;
@@ -25,6 +27,7 @@ fn main() {
 
     // read in a bunch of puzzles
     let mut file = std::fs::File::open("./p096_sudoku.txt").unwrap();
+    //let mut file = std::fs::File::open("./test.txt").unwrap();
     let mut file_buf: Vec<u8> = Vec::new();
     file.read_to_end(&mut file_buf).unwrap();
 
@@ -69,6 +72,7 @@ fn main() {
                 total_found += 1;
                 state.set_value( round_results[i].0, round_results[i].1, round_results[i].2 );
             }
+            println!("Game {}",g+1);
             println!("{}",state);
             if (round_results.len() == 0) {
                 state.check_naked_subsets();
