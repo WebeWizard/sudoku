@@ -1,0 +1,4 @@
+Each technique is just a function that operates over a list of spaces.
+ - Give each function a Vec<&mut Space>
+ - Then the function either mutates the Space probabilities directly
+      OR it returns a Vec<(val,col,row)> to pass into "set_value"

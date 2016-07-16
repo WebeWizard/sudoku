@@ -14,6 +14,7 @@ mod sudoku;
 use sudoku::{Game, new_game};
 
 // TODO: CHECK ROWS AND COLUMNS FOR NAKED AND HIDDEN SINGLES
+// DONE?: Just going to assume that checking for hidden singles in subgrids is working as intended
 // DONE?: Finish removing val_poss if Naked Locked subset
 // TODO: Need to check for hidden singletons, triples, quads, omfg this his harder than I thought
 // TODO: Maybe we should have generic technique functions that take a slice, instead of having

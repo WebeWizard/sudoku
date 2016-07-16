@@ -49,6 +49,7 @@ impl Game {
     fn update_prob( &mut self, val: usize, column: usize, row: usize ) {
         // set probability of partners for value to 0
         // - row partners
+        println!("{}",val);
         for i in 0..self.size {
             self.board[column][i].val_poss_set[val-1] = false;
         }
@@ -83,10 +84,6 @@ impl Game {
     // well not completely wrong... it will work for naked pairs, but not all subsets
     // NOTE:  if we don't detect a subset "A,B,C" for A, then maybe we'll detect it when testing B?
     fn check_subgrid_naked_subsets( &mut self, x: usize, y: usize ) {
-        println!("meow");
-        println!("{:?}",self.board[6][5].val_poss_set);
-        println!("{:?}",self.board[6][3].val_poss_set);
-        println!("{:?}",self.board[8][4].val_poss_set);
         //println!("{:?}",self.board[0][0].val_poss_set);
         //println!("{:?}",self.board[1][0].val_poss_set);
         // repeat for each cell in the subgrid
@@ -193,12 +190,22 @@ impl Game {
     // as a parameter
     pub fn check_subgrids( &self ) -> Vec<(usize,usize,usize)> {
         let mut new_value_positions: Vec<(usize,usize,usize)> = Vec::new();
-        for val in 1..self.size+1 {
+        // check for naked singles
+        for val in 0..self.size {
             let subgrid_positions = self.check_subgrids_value( val );
             for i in 0..subgrid_positions.len() {
-                new_value_positions.push( (val, subgrid_positions[i].0, subgrid_positions[i].1) );
+                new_value_positions.push( (val+1, subgrid_positions[i].0, subgrid_positions[i].1) );
             }
         }
+        // check for hidden singles
+        let mut new_hidden_positions: Vec<(usize,usize,usize)> = Vec::new();
+        for x in 0..self.n {
+            for y in 0..self.n {
+                let mut subgrid_positions = self.check_subgrid_hidden_single( x*self.n, y*self.n );
+                new_hidden_positions.append( &mut subgrid_positions );
+            }
+        }
+        new_value_positions.append( &mut new_hidden_positions );
         return new_value_positions;
     }
 
@@ -218,14 +225,15 @@ impl Game {
     // checks a subgrid to see if there is only one position for a value
     // - returns (column,row) tuple of position
     // - if column and row = size then there was more than one open position, or if the value is already in the subgrid
+    // checks for Naked Singles
     fn check_subgrid_value( &self, val: usize, column: usize, row: usize ) -> (usize,usize) {
         let start_col = self.n*(column/self.n);
         let start_row = self.n*(row/self.n);
         let mut non_zero_pos: Vec<(usize,usize)> = Vec::new();
         for x in 0..self.n {
             for y in 0..self.n {
-                if ( self.board[start_col+x][start_row+y].value == val ) { return (self.size,self.size); }
-                if ( self.board[start_col+x][start_row+y].val_poss_set[val-1] != false ) {
+                if ( self.board[start_col+x][start_row+y].value == val+1 ) { return (self.size,self.size); }
+                if ( self.board[start_col+x][start_row+y].val_poss_set[val] != false ) {
                     non_zero_pos.push((start_col+x,start_row+y));
                 }
             }
@@ -249,8 +257,40 @@ impl Game {
         }
     }
 
+    // Checks all spaces in a subgrid for hidden singles.
+    fn check_subgrid_hidden_single( &self, col: usize, row: usize ) -> Vec<(usize,usize,usize)> {
+        // for each space in subgrid
+        let mut found: Vec<(usize,usize,usize)> = Vec::new();
+        for x in 0..self.n {
+            for y in 0..self.n {
+                // for each possible value in that space
+                for v in 0..self.size {
+                    // compare each value with each other space
+                    if ( self.board[col+x][row+y].val_poss_set[v] == false ) {continue;}
+                    let mut single = true;
+                    for other_x in 0..self.n {
+                        for other_y in 0..self.n {
+                            if ( x == other_x && y == other_y ) {continue;}
+                            if ( self.board[col+other_x][row+other_y].value != 0 ) { continue; }
+                            if ( self.board[col+other_x][row+other_y].val_poss_set[v] == true ) {
+                                single = false;
+                            }
+                        }
+                    }
+                    if ( single == true ) {
+                        found.push( (v+1,col+x,row+y) );
+                        println!("{}, {}, {}",v+1,col+x,row+y);
+                        println!("{}",self);
+                    }
+                }
+            }
+        }
+        return found;
+    }
+
 }
 
+// TODO: Replace this with Vec::binary_search(&self, x: &T) -> Result<usize,usize>
 fn in_subset(subset: &Vec<(usize,usize)>, cell: (usize,usize)) -> bool {
     for i in 0..subset.len() {
         if ( subset[i] == cell ) {
