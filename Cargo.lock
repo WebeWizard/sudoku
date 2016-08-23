@@ -1,0 +1,11 @@
+[root]
+name = "sudoku"
+version = "0.1.0"
+dependencies = [
+ "sudokulib 0.1.0",
+]
+
+[[package]]
+name = "sudokulib"
+version = "0.1.0"
+
