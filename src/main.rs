@@ -5,8 +5,7 @@ use sudokulib::solver::solve;
 fn main() {
     let mut game: Game = Game::new(3);
 
-    game.init_from_str("280000473534827196071034080300500040000340060460790310090203654003009821000080937");
-
+    game.init_from_str("100920000524010000000000070050008102000000000402700090060000000000030945000071006");
     solve(&mut game);
 
     println!("{}",game);
